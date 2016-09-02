@@ -20,56 +20,6 @@ var autoClose = require('browser-sync-close-hook');
 var env = process.env.NODE_ENV;
 
 // ////////////////////////////////////////////////
-// Javascript Browserify, Watchify, Babel, React
-// https://github.com/gulpjs/gulp/blob/master/docs/recipes/fast-browserify-builds-with-watchify.md
-// ////////////////////////////////////////////////
-
-// add custom browserify options here
-var customOpts = {
-    entries: ['./src/js/index.js'],
-    debug: true,
-};
-var opts = assign({}, watchify.args, customOpts);
-var b = watchify(browserify(opts));
-
-// add transformations here
-b.transform('babelify', {
-    presets: ['es2015', 'react']
-});
-
-gulp.task('js', bundle); // so you can run `gulp js` to build the file
-b.on('update', bundle); // on any dep update, runs the bundler
-b.on('log', gutil.log); // output build logs to terminal
-
-function bundle() {
-    return b.bundle()
-
-    // log errors if they happen
-    .on('error', gutil.log.bind(gutil, gutil.colors.red(
-            '\n\n*********************************** \n' +
-            'BROWSERIFY ERROR:' +
-            '\n*********************************** \n\n'
-        )))
-        .pipe(source('main.js'))
-
-    // optional, remove if you don't need to buffer file contents
-    .pipe(buffer())
-        .pipe(gulpif(env === 'production', uglify()))
-
-    // optional, remove if you dont want sourcemaps
-    .pipe(sourcemaps.init({
-            loadMaps: true
-        })) // loads map from browserify file
-        // Add transformation tasks to the pipeline here.
-        // writes .map file
-        .pipe(gulpif(env === 'development', sourcemaps.write('../maps')))
-        .pipe(gulp.dest('./public/js'))
-        .pipe(browserSync.reload({
-            stream: true
-        }));
-}
-
-// ////////////////////////////////////////////////
 // Browser-Sync Tasks
 // ////////////////////////////////////////////////
 
@@ -82,7 +32,7 @@ gulp.task('browserSync', function() {
     });
     browserSync({
         server: {
-            baseDir: './public/',
+            baseDir: './',
             browser: ["google chrome", "safari"]
         },
         browser: ["google chrome", "safari"]
@@ -94,7 +44,7 @@ gulp.task('browserSync', function() {
 // ////////////////////////////////////////////////
 
 gulp.task('html', function() {
-    return gulp.src('public/**/*.html')
+    return gulp.src('./**/*.html')
         .pipe(browserSync.reload({
             stream: true
         }));
@@ -105,7 +55,7 @@ gulp.task('html', function() {
 // ////////////////////////////////////////////////
 
 gulp.task('scripts', function() {
-    return gulp.src('public/js/**/*.js')
+    return gulp.src('./js/**/*.js')
         .pipe(browserSync.reload({
             stream: true
         }));
@@ -116,28 +66,11 @@ gulp.task('scripts', function() {
 // ///////////////////////////////////////////////
 
 gulp.task('styles', function() {
-    gulp.src('public/css/**/*.css')
+    gulp.src('./css/**/*.css')
         .pipe(browserSync.reload({
             stream: true
         }));
-    //   gulp.src('src/scss/style.scss')
-    //     .pipe(sourcemaps.init())
-    //
-    //       // scss output compressed if production or expanded if development
-    //       .pipe(gulpif(env === 'production', sass({ outputStyle: 'compressed' }),
-    //         sass({ outputStyle: 'expanded' })))
-    //       .on('error', gutil.log.bind(gutil, gutil.colors.red(
-    //          '\n\n*********************************** \n' +
-    //         'SASS ERROR:' +
-    //         '\n*********************************** \n\n'
-    //         )))
-    //       .pipe(autoprefixer({
-    //         browsers: ['last 3 versions'],
-    //         cascade: false,
-    //       }))
-    //     .pipe(gulpif(env === 'development', sourcemaps.write('../maps')))
-    // .pipe(gulp.dest('public/css'))
-    // .pipe(browserSync.reload({ stream: true }));
+
 });
 
 // ////////////////////////////////////////////////
@@ -145,11 +78,11 @@ gulp.task('styles', function() {
 // ////////////////////////////////////////////////
 
 gulp.task('watch', function() {
-    gulp.watch('public/**/*.html', ['html']);
+    gulp.watch('./**/*.html', ['html']);
     // gulp.watch('src/scss/**/*.scss', ['styles']);
-    gulp.watch('public/css/**/*.css', ['styles']);
-    gulp.watch('public/js/**/*.js', ['scripts']);
+    gulp.watch('./css/**/*.css', ['styles']);
+    gulp.watch('./js/**/*.js', ['scripts']);
 
 });
 
-gulp.task('default', ['scripts', 'js', 'styles', 'browserSync', 'watch']);
+gulp.task('default', ['scripts', 'styles', 'browserSync', 'watch']);
