@@ -36,14 +36,10 @@ li {
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    /*width: 20px;
-    height: 20px;*/
     width: 20px;
     height: 20px;
     -ms-transform: rotate(0deg);
-    /* IE 9 */
     -webkit-transform: rotate(0deg);
-    /* Chrome, Safari, Opera */
     transform: rotate(0deg);
 }
 
